@@ -1,0 +1,10 @@
+sequenceDiagram
+    participant browser
+    participant server
+    
+    Note right of browser: Upon handling submission button click the browser send form data encoded as json text
+    browser->>server:   POST https://studies.cs.helsinki.fi/exampleapp/new_note
+    activate server
+    Note left of server: The server executes backend code that saves text from the browser and sends back a response
+    server-->>browser: Status Code 201: Resource created
+    deactivate server
