@@ -65,6 +65,7 @@ const App = () => {
         alert(
           `the note '${note.content}' was already deleted from server`
         )
+        setErrorMessage(`the note '${note.content}' was already deleted from server`)
         setNotes(notes.filter(n => n.id !== id))
       })
   }
