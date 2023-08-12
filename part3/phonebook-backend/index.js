@@ -1,6 +1,8 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const Person = require('./models/person')
 const app = express()
 app.use(express.json())
 app.use(cors())
@@ -36,7 +38,7 @@ let persons = [
   { 
     "id": 4,
     "name": "Mary Poppendieck", 
-    "number": "39-23-6423122"
+    "number": "39-23-6423122" 
   }
 ]
 
@@ -74,20 +76,33 @@ app.post('/api/persons', (request, response) => {
       error: 'content missing' 
     })
   }
+
+  const persons = []
+
+  Person.find({}).then(result => {
+    result.forEach(person => {
+      persons.concat(person)
+    })
+  })
+
   let nameExists = (persons.map(person => person.name)).includes(body.name)
   if(nameExists){
     return response.status(409).json({ 
       error: 'name aleardy exists' 
     })
   }
-  const newPerson = {
-    "id": Math.floor((Math.random() * 10000000) + 1),
-    "name":body.name,
-    "number":body.number
-  }
-  persons = persons.concat(newPerson)
-  response.json(newPerson)
+
+  const person = new Person({
+      name: body.name,
+      number: body.number,
+  })
+
+  person.save().then(result => {
+      response.json(newPerson)
+      mongoose.connection.close()
+  })
+  
 })
 
-const PORT = 3001
+const PORT = process.env.PORT
 app.listen(PORT)
