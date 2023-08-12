@@ -19,53 +19,52 @@ app.use(morgan(function (tokens, req, res) {
 }))
 app.use(express.static('build'))
 
-let persons = [
-  { 
-    "id": 1,
-    "name": "Arto Hellas", 
-    "number": "040-123456"
-  },
-  { 
-    "id": 2,
-    "name": "Ada Lovelace", 
-    "number": "39-44-5323523"
-  },
-  { 
-    "id": 3,
-    "name": "Dan Abramov", 
-    "number": "12-43-234345"
-  },
-  { 
-    "id": 4,
-    "name": "Mary Poppendieck", 
-    "number": "39-23-6423122" 
-  }
-]
-
 app.get('/api/persons', (request, response) => {
-  response.json(persons)
+  let persons = []
+  Person.find({})
+    .then(result => {
+      persons = [...result]
+      response.json(persons)
+    })
+    .catch(error=>{
+      console.log(error.message)
+    })
 })
 
 app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  const person = persons.find(person => person.id === id)
-  if(person){
-    response.json(person)
-  }else{
-    response.status(404).end()
-  }
+  Person
+    .findById(request.params.id)
+    .then(result =>{
+      response.json(result)
+    })
+    .catch(error => {
+      console.log(error.message)
+      response.status(404).end()
+    })
 })
 
 app.get('/info', (req, res) => {
+  let persons = []
+
+  Person
+    .find({})
+    .then(result => {
+      persons = [...result]
+    })
+
   const date = new Date();
   res.set('Content-Type', 'text/html')
   res.send('Phonebook has info for '+persons.length+' people<br/><br/>'+date)
 })
 
 app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  persons = persons.filter(person => person.id !== id)
-  response.status(204).end()
+  Person.findByIdAndRemove(request.params.id)
+  .then(result => {
+    response.status(204).end()
+  })
+  .catch(error => {
+    console.log(error.message)
+  })
 })
 
 app.post('/api/persons', (request, response) => {
@@ -77,13 +76,13 @@ app.post('/api/persons', (request, response) => {
     })
   }
 
-  const persons = []
+  let persons = []
 
-  Person.find({}).then(result => {
-    result.forEach(person => {
-      persons.concat(person)
+  Person
+    .find({})
+    .then(result => {
+      persons = [...result]
     })
-  })
 
   let nameExists = (persons.map(person => person.name)).includes(body.name)
   if(nameExists){
