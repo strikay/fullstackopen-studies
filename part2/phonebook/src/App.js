@@ -175,6 +175,16 @@ const App = () => {
             setErrorMessage(null)
           }, 5000)
         })
+        .catch(error => {
+          console.log(error.response.data.error)
+          setNotificationColor('red')
+          setErrorMessage(
+            `${error.response.data.error}`
+          )
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
+        })
 
       /*let newPersons = [...persons].concat(
         {name: newName, number: newNumber, id: last_id+1}

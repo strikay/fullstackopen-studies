@@ -31,16 +31,17 @@ app.get('/api/persons', (request, response) => {
     })
 })
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
   Person
     .findById(request.params.id)
-    .then(result =>{
-      response.json(result)
+    .then(person =>{
+      if(person){
+        response.json(person)
+      }else{
+        response.status(404).end()
+      }
     })
-    .catch(error => {
-      console.log(error.message)
-      response.status(404).end()
-    })
+    .catch(error => next(error))
 })
 
 app.get('/info', (req, res) => {
@@ -50,11 +51,10 @@ app.get('/info', (req, res) => {
     .find({})
     .then(result => {
       persons = [...result]
+      const date = new Date();
+      res.set('Content-Type', 'text/html')
+      res.send('Phonebook has info for '+persons.length+' people<br/><br/>'+date)
     })
-
-  const date = new Date();
-  res.set('Content-Type', 'text/html')
-  res.send('Phonebook has info for '+persons.length+' people<br/><br/>'+date)
 })
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -67,7 +67,7 @@ app.delete('/api/persons/:id', (request, response) => {
   })
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body
 
   if(!(body.name&&body.number)){
@@ -87,7 +87,7 @@ app.post('/api/persons', (request, response) => {
   let nameExists = (persons.map(person => person.name)).includes(body.name)
   if(nameExists){
     return response.status(409).json({ 
-      error: 'name aleardy exists' 
+      error: 'name aleardy exists'
     })
   }
 
@@ -96,12 +96,42 @@ app.post('/api/persons', (request, response) => {
       number: body.number,
   })
 
-  person.save().then(result => {
-      response.json(newPerson)
-      mongoose.connection.close()
-  })
+  person
+    .save()
+    .then(result => {
+        response.json(result)
+    })
+    .catch(error => next(error))
   
 })
+
+app.put('/api/persons/:id', (request, response, next) => {
+  const {name, number} = request.body
+
+  Person.findByIdAndUpdate(request.params.id, {name, number}, { new: true })
+    .then(updatedPerson => {
+      response.json(updatedPerson)
+    })
+    .catch(error => next(error))
+})
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } 
+  if (error.name === 'ValidationError') {
+    return response.status(400).send({ error: error.message })
+  } 
+  next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT)
