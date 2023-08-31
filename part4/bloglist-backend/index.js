@@ -1,8 +1,7 @@
 const express = require('express')
-const blogRouter = require('express').Router()
+const blogRouter = require('./controllers/blogs')
 const app = express()
 const cors = require('cors')
-const Blog = require('./models/blog')
 const mongoose = require('mongoose')
 
 const mongoUrl = 'mongodb://127.0.0.1:27017/bloglist'
@@ -10,24 +9,6 @@ mongoose.connect(mongoUrl)
 
 app.use(cors())
 app.use(express.json())
-
-blogRouter.get('/', (request, response) => {
-    Blog
-      .find({})
-      .then(blogs => {
-        response.json(blogs)
-      })
-  })
-
-blogRouter.post('/', (request, response) => {
-  const blog = new Blog(request.body)
-
-  blog
-    .save()
-    .then(result => {
-      response.status(201).json(result)
-    })
-})
 
 app.use('/api/blogs', blogRouter)
 
