@@ -102,3 +102,6 @@ test('missing title results in error 400 and failure to save to database ', asyn
   //expect(blogs_db[0].likes).toEqual(0)
 })
 
+afterAll(async () => {
+  await mongoose.connection.close()
+})
