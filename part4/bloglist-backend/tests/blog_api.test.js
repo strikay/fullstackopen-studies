@@ -46,7 +46,6 @@ test('uniq identifier is named id', async () => {
 })
 
 test('making a post request successfully creates a new blog', async () => {
-
   const dummyBlogPost =   {
     title: 'This is a test blog post',
     id: '6500a804928ff98e8e9dfc14',
@@ -97,9 +96,37 @@ test('missing title results in error 400 and failure to save to database ', asyn
     .post('/api/blogs')
     .send(dummyBlogPost)
     .expect(400)
+})
 
-  //const blogs_db = await Blog.find({_id: '6500a804928ff98e8e9dfc14'})
-  //expect(blogs_db[0].likes).toEqual(0)
+test('a blog can be deleted', async () => {
+  const blogsAtStart = await Blog.find({})
+  const blogToDelete = blogsAtStart[0]
+
+  await api
+    .delete(`/api/blogs/${blogToDelete.id}`)
+    .expect(204)
+
+    const blogsAtEnd = await Blog.find({})
+    expect(blogsAtEnd).toHaveLength(initialBlogs.length-1)
+})
+
+test('the likes property of a blog can be updated', async () => {
+
+  let blogsAtStart = await Blog.find({})
+  blogsAtStart = blogsAtStart.map(blog => blog.toJSON())
+  const blogToUpdate = blogsAtStart[0]
+  const updatedBlog = {...blogToUpdate, likes:blogToUpdate.likes+1}
+
+  await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send(updatedBlog)
+    .expect(200)
+
+    let blogsAtEnd = await Blog.find({})
+    blogsAtEnd = blogsAtEnd.map(blog => blog.toJSON())
+    expect(blogsAtEnd).not.toContainEqual(blogToUpdate)
+    expect(blogsAtEnd).toContainEqual(updatedBlog)
+    expect(blogsAtEnd[0].likes).toEqual(blogToUpdate.likes+1)
 })
 
 afterAll(async () => {
