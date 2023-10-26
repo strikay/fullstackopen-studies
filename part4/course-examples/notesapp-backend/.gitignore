@@ -1,0 +1,6 @@
+/node_modules
+.env
+mongo.js
+monga.js
+tests/average.test.js
+tests/reverse.test.js
