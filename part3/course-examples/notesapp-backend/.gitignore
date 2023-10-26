@@ -2,5 +2,10 @@
 .env
 mongo.js
 monga.js
+add_note.rest
+add_user.rest
+get_notes.rest
+get_users.rest
+login.rest
 tests/average.test.js
 tests/reverse.test.js
