@@ -44,15 +44,27 @@ blogRouter.post('/', async (request, response) => {
   response.status(201).json(returned_blog)
 })
 
+blogRouter.put('/:id/comments', async (request, response) => {
+  let {comment} = request.body
+
+  const blog = await Blog.findById(request.params.id)
+
+  blog.comments =  blog.comments.concat(comment)
+  await blog.save()
+
+  //const returned_blog = await Blog.findById(savedBlog._id).populate('user', {username:1, name:1})
+  response.json(blog.comments)
+})
+
 blogRouter.delete('/:id', async (request, response) => {
   const token = request.token
 
   const blog = await Blog.findById(request.params.id).populate('user', {blogs:0, password:0})
-  const userFromBlog = blog.user
 
   if(!blog){
     return response.status(400).json('blog not available')
   }
+  const userFromBlog = blog.user
 
   const decodedToken = jwt.verify(token, process.env.SECRET)
 
