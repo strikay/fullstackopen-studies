@@ -1,0 +1,7 @@
+POST http://localhost:4000 HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NjhlZThiZGZhZWVjMmEyY2I1MzdkZSIsInVzZXJuYW1lIjoiam9obmRvZSIsImlhdCI6MTcwMTM3NTczMH0.fGH_3NgXN14kVnpNAwvamjSW-3GbEt3f8ChJPLzaolc
+
+{
+    "query": "query { me { username } }"
+}
