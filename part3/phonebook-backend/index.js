@@ -51,7 +51,7 @@ app.get('/info', (req, res) => {
     .find({})
     .then(result => {
       persons = [...result]
-      const date = new Date();
+      const date = new Date()
       res.set('Content-Type', 'text/html')
       res.send('Phonebook has info for '+persons.length+' people<br/><br/>'+date)
     })
@@ -59,12 +59,13 @@ app.get('/info', (req, res) => {
 
 app.delete('/api/persons/:id', (request, response) => {
   Person.findByIdAndRemove(request.params.id)
-  .then(result => {
-    response.status(204).end()
-  })
-  .catch(error => {
-    console.log(error.message)
-  })
+    .then(result => {
+      result
+      response.status(204).end()
+    })
+    .catch(error => {
+      console.log(error.message)
+    })
 })
 
 app.post('/api/persons', (request, response, next) => {
@@ -92,14 +93,14 @@ app.post('/api/persons', (request, response, next) => {
   }
 
   const person = new Person({
-      name: body.name,
-      number: body.number,
+    name: body.name,
+    number: body.number,
   })
 
   person
     .save()
     .then(result => {
-        response.json(result)
+      response.json(result)
     })
     .catch(error => next(error))
   
