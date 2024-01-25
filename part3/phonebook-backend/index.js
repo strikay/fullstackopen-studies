@@ -26,7 +26,7 @@ app.get('/api/persons', (request, response) => {
       persons = [...result]
       response.json(persons)
     })
-    .catch(error=>{
+    .catch(error => {
       console.log(error.message)
     })
 })
@@ -34,7 +34,7 @@ app.get('/api/persons', (request, response) => {
 app.get('/api/persons/:id', (request, response, next) => {
   Person
     .findById(request.params.id)
-    .then(person =>{
+    .then(person => {
       if(person){
         response.json(person)
       }else{
@@ -72,8 +72,8 @@ app.post('/api/persons', (request, response, next) => {
   const body = request.body
 
   if(!(body.name&&body.number)){
-    return response.status(400).json({ 
-      error: 'content missing' 
+    return response.status(400).json({
+      error: 'content missing'
     })
   }
 
@@ -87,7 +87,7 @@ app.post('/api/persons', (request, response, next) => {
 
   let nameExists = (persons.map(person => person.name)).includes(body.name)
   if(nameExists){
-    return response.status(409).json({ 
+    return response.status(409).json({
       error: 'name aleardy exists'
     })
   }
@@ -103,13 +103,12 @@ app.post('/api/persons', (request, response, next) => {
       response.json(result)
     })
     .catch(error => next(error))
-  
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
-  const {name, number} = request.body
+  const { name, number } = request.body
 
-  Person.findByIdAndUpdate(request.params.id, {name, number}, { new: true })
+  Person.findByIdAndUpdate(request.params.id, { name, number }, { new: true })
     .then(updatedPerson => {
       response.json(updatedPerson)
     })
@@ -125,10 +124,10 @@ const errorHandler = (error, request, response, next) => {
   console.error(error.message)
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
-  } 
+  }
   if (error.name === 'ValidationError') {
     return response.status(400).send({ error: error.message })
-  } 
+  }
   next(error)
 }
 
