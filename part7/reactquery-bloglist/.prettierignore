@@ -1,0 +1,5 @@
+# Ignore artifacts:
+build
+coverage
+cypress
+/src/components/BlogForm.test.js
