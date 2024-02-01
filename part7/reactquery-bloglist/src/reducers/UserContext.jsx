@@ -1,4 +1,5 @@
 import { createContext, useReducer } from "react";
+import PropTypes from 'prop-types';
 
 const userReducer = (state, action) => {
   switch (action.type) {
@@ -22,5 +23,9 @@ export const UserContextProvider = ({ children }) => {
     </UserContext.Provider>
   );
 };
+
+UserContextProvider.propTypes = {
+  children: PropTypes.element
+}
 
 export default UserContext;
