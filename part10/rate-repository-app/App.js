@@ -1,20 +1,31 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
 
-export default function App() {
+import { ApolloProvider } from '@apollo/client';
+
+import { NativeRouter } from 'react-router-native';
+import Main from './src/components/Main';
+import createApolloClient from './src/utils/apolloClient';
+import AuthStorageContext from './src/contexts/AuthStorageContext';
+import { Provider as PaperProvider } from 'react-native-paper';
+
+import AuthStorage from './src/utils/authStorage';
+
+const authStorage = new AuthStorage();
+const apolloClient = createApolloClient(authStorage);
+
+const App = () => {
   return (
-    <View style={styles.container}>
-      <Text>I made my first React Nativee App!- Strive </Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+    
+      <NativeRouter>
+        <ApolloProvider client={apolloClient}>
+          <AuthStorageContext.Provider value={authStorage}>
+            <PaperProvider>
+              <Main />
+            </PaperProvider>
+          </AuthStorageContext.Provider>
+        </ApolloProvider>
+      </NativeRouter>
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+  );
+};
+
+export default App;

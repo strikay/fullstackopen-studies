@@ -1,0 +1,3 @@
+npx expo start --offline --dev-client --force-manifest-type=classic
+
+NODE VERSION: v18.16.0
